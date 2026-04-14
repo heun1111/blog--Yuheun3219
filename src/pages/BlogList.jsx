@@ -4,11 +4,24 @@ import posts from '../data/posts.json';
 
 const BlogList = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 9;
   
   const filteredPosts = posts.filter(post => 
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     post.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Pagination logic
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-8 py-20">
@@ -24,10 +37,13 @@ const BlogList = () => {
               <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">search</span>
               <input 
                 className="w-full pl-12 pr-4 py-4 bg-surface-container-low rounded-xl border border-surface-variant focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-outline/60 text-on-surface" 
-                placeholder="Search articles..." 
+                placeholder="Search software trends..." 
                 type="text"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setCurrentPage(1);
+                }}
               />
             </div>
           </div>
@@ -35,7 +51,7 @@ const BlogList = () => {
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-        {filteredPosts.map((post) => (
+        {currentPosts.map((post) => (
           <Link key={post.id} to={`/post/${post.id}`} className="group">
             <div className="aspect-[16/10] rounded-lg overflow-hidden bg-surface-container-low mb-6 shadow-sm border border-primary/5">
               <img 
@@ -59,6 +75,38 @@ const BlogList = () => {
           </Link>
         ))}
       </section>
+
+      {totalPages > 1 && (
+        <div className="mt-20 flex justify-center items-center space-x-4">
+          <button 
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="w-12 h-12 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary-container disabled:opacity-30 transition-all"
+          >
+            <span className="material-symbols-outlined">chevron_left</span>
+          </button>
+          
+          <div className="flex space-x-2">
+            {[...Array(totalPages)].map((_, i) => (
+              <button 
+                key={i + 1}
+                onClick={() => paginate(i + 1)}
+                className={`w-12 h-12 rounded-full font-bold text-sm transition-all ${currentPage === i + 1 ? 'bg-primary text-white scale-110 shadow-lg' : 'hover:bg-primary-container'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button 
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="w-12 h-12 rounded-full border border-primary/20 flex items-center justify-center hover:bg-primary-container disabled:opacity-30 transition-all"
+          >
+            <span className="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      )}
 
       {filteredPosts.length === 0 && (
         <div className="text-center py-20">

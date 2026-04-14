@@ -27,9 +27,9 @@ const Footer = () => (
       <div className="text-2xl font-black text-primary">Ethereal Interface</div>
       <div className="text-on-surface-variant/70">© 2024 Ethereal Interface. Crafted for clarity.</div>
       <div className="flex space-x-10">
+        <Link className="text-on-surface-variant hover:text-primary transition-all font-bold" to="/sitemap">Project Sitemap</Link>
         <a className="text-on-surface-variant hover:text-primary transition-all" href="#">Privacy Policy</a>
         <a className="text-on-surface-variant hover:text-primary transition-all" href="#">Terms of Service</a>
-        <a className="text-on-surface-variant hover:text-primary transition-all" href="#">RSS Feed</a>
       </div>
     </div>
   </footer>
